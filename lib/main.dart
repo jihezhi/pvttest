@@ -30,38 +30,42 @@ class _MyHomePageState extends StatelessWidget {
   const _MyHomePageState({Key? key}):super(key:key);
   @override
   Widget build(BuildContext context) {
-    bloc.fetchnumber();
     return Scaffold(
       appBar: AppBar(
         title: Text('PVT'),
       ),
       body: StreamBuilder(
-        stream: Stream.fromIterable(List<int>.generate(100000, (index) => index+1)).interval(Duration(seconds: 1)),
-        builder: (context,AsyncSnapshot<int> snapshot) {
+        stream: bloc._allNumbers.stream,
+        builder: (context,AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-            return Center(child:Text(snapshot.data.toString()));
+            return Center(
+                child: Text(snapshot.data.toString())
+            );
+
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else {
-            return Text('error');
+            return FloatingActionButton(
+              onPressed: () => bloc.fetchnumber(),
+            );
           }
         },
       ),
+        floatingActionButton: FloatingActionButton(onPressed: () => bloc.dispose())
     );
   }
 }
 
 class NumberBloc {
   final _repository = Repository();
-  final _numbersFetcher = PublishSubject<int>();
-  final _allNumbers = BehaviorSubject<int>();
+  final _numbersFetcher = PublishSubject<Stream<int>>();
+  final _allNumbers =  StreamController();
   fetchnumber() async {
-    _numbersFetcher
-      ..addStream(_repository.fetchnumber())..forEach((element) {_allNumbers.add(element);});
+    _allNumbers.addStream(Stream.fromIterable(List<int>.generate(100000, (index) => index+1)).interval(Duration(seconds: 1)));
   }
 
   dispose() {
-    _numbersFetcher.close();
+    _allNumbers.close();
   }
 }
 

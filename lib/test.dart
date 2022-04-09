@@ -3,5 +3,10 @@ import 'package:rxdart/rxdart.dart';
 import 'dart:async';
 
 void main() {
-  PublishSubject<int>()..addStream(Stream.fromIterable(List<int>.generate(100, (index) => index+1)).debounceTime(Duration(seconds: 1)))..listen(print);
+  final stream = Stream.empty();
+  stream.listen(print);
+  stream.mergeWith([Stream.fromIterable(List<int>.generate(100000, (index) => index+1)).interval(Duration(seconds: 1))]);
+  stream.listen(print);
+  Future.delayed(Duration(seconds: 5),() => stream.listen(print).cancel());
+
 }
