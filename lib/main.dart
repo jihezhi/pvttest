@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:rxdart/rxdart.dart';
 import 'dart:async';
+import 'package:quiver/async.dart';
+
 
 
 void main() {
@@ -36,7 +38,7 @@ class _MyHomePageState extends StatelessWidget {
       ),
       body: StreamBuilder(
         stream: bloc._allNumbers.stream,
-        builder: (context,AsyncSnapshot<dynamic> snapshot) {
+        builder: (context,AsyncSnapshot<int> snapshot) {
           if (snapshot.hasData) {
             return Center(
                 child: Text(snapshot.data.toString())
@@ -59,9 +61,14 @@ class _MyHomePageState extends StatelessWidget {
 class NumberBloc {
   final _repository = Repository();
   final _numbersFetcher = PublishSubject<Stream<int>>();
-  final _allNumbers =  StreamController();
+  final _allNumbers = PublishSubject<int>();
   fetchnumber() async {
-    _allNumbers.addStream(Stream.fromIterable(List<int>.generate(100000, (index) => index+1)).interval(Duration(seconds: 1)));
+    var countDownTimer = CountdownTimer(
+        const Duration(minutes: 20),
+        const Duration(milliseconds: 100))
+      ..forEach((element) {
+        _allNumbers.add((element.elapsed.inMilliseconds/100).round());
+    });
   }
 
   dispose() {
