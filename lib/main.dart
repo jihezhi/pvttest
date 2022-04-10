@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'dart:async';
 import 'package:quiver/async.dart';
+import 'dart:math';
 
 
 
@@ -63,12 +64,15 @@ class NumberBloc {
   final _numbersFetcher = PublishSubject<Stream<int>>();
   final _allNumbers = PublishSubject<int>();
   fetchnumber() async {
-    var countDownTimer = CountdownTimer(
+    Future.delayed(Duration(seconds: Random().nextInt(20)),
+        () {
+        var countDownTimer = CountdownTimer(
         const Duration(minutes: 20),
-        const Duration(milliseconds: 100))
-      ..forEach((element) {
-        _allNumbers.add((element.elapsed.inMilliseconds/100).round());
-    });
+    const Duration(milliseconds: 100))
+    ..forEach((element) {
+    _allNumbers.add((element.elapsed.inMilliseconds/100).round());
+    }); }
+    );
   }
 
   dispose() {
