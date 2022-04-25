@@ -79,7 +79,3 @@ class NumberBloc {
     _allNumbers.close();
   }
 }
-
-class Repository {
-  fetchnumber() => Stream.fromIterable(List<int>.generate(100000, (index) => index+1));
-}
